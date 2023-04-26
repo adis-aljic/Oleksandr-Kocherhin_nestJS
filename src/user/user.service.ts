@@ -7,10 +7,14 @@ import { sign } from "jsonwebtoken"
 import { JWT_SECRET } from "src/config";
 import { LoginUserDTO } from "./loginUserDTO";
 import { compare } from "bcrypt";
+import { UpdateUserDTO } from "./updateUserDTO";
 
 
 @Injectable()
 export class UserService {
+    // updateUsers(id: any, updateUserDTO: UpdateUserDTO) {
+    // throw new Error("Method not implemented.");
+    // }
     constructor(@InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>
     ) { }
@@ -73,6 +77,18 @@ export class UserService {
                 token: this.generateJWT(user)
             }
         }
+    }
+
+
+
+    async findById(id: number): Promise<UserEntity> {
+        return this.userRepository.findOneBy({ id })
+    }
+
+    async updateUser(userId: number, updateUserDTO: UpdateUserDTO): Promise<any> {
+        const user = await this.findById(userId)
+        Object.assign(user, updateUserDTO)
+        return await this.userRepository.save(user)
     }
 
 }
